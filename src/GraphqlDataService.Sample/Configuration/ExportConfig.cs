@@ -37,4 +37,7 @@ public sealed class ExportConfig
 
     [Range(1, 30)]
     public int StatusPollingIntervalSeconds { get; init; } = 1;
+
+    [Range(1, 60)]
+    public int CleanupIntervalMinutes { get; init; } = 5;
 }

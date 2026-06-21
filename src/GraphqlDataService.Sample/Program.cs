@@ -24,7 +24,7 @@ builder.Host.UseSerilog((context, configuration) => configuration
 builder.Services.AddOptions<ExportConfig>()
     .BindConfiguration(ExportConfig.SectionName)
     .ValidateDataAnnotations()
-    .Validate(config => config.LeaseSeconds > config.WorkerScanIntervalSeconds)
+    .Validate(config => config.LeaseSeconds >= config.WorkerScanIntervalSeconds * 3)
     .ValidateOnStart();
 builder.Services.AddOptions<DatabaseConfig>()
     .BindConfiguration(DatabaseConfig.SectionName)

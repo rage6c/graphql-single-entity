@@ -1,12 +1,16 @@
+using GraphqlDataService.Sample.Configuration;
+using Microsoft.Extensions.Options;
+
 namespace GraphqlDataService.Sample.GraphQL.Export;
 
 public sealed class ExportCleanupService(
     IExportJobStore store,
+    IOptions<ExportConfig> options,
     ILogger<ExportCleanupService> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        using var timer = new PeriodicTimer(TimeSpan.FromMinutes(5));
+        using var timer = new PeriodicTimer(TimeSpan.FromMinutes(options.Value.CleanupIntervalMinutes));
         while (await timer.WaitForNextTickAsync(stoppingToken))
         {
             await foreach (var exportId in store.ListAsync(stoppingToken))

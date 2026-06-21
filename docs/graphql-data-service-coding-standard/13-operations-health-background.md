@@ -18,4 +18,3 @@ Operational rules:
 - Never expose worker exception details in YAML or GraphQL.
 - Shared storage must provide the locking and atomic replacement semantics required by `YamlExportJobStore`.
 - Add database/schema/grid readiness and metrics before production.
-- `MaxConcurrentExports` is not currently enforced and must not be presented as active throttling.

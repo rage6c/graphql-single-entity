@@ -23,6 +23,13 @@ public static class GraphQlConfiguration
             .Get<GraphQlConfig>() ?? new GraphQlConfig();
 
         var providerTypes = DiscoverProviderTypes(config.ProviderNamespacePrefix);
+        if (providerTypes.Count == 0)
+        {
+            throw new InvalidOperationException(
+                $"No provider types were found under namespace '{config.ProviderNamespacePrefix}'. " +
+                "Check GraphQL:ProviderNamespacePrefix in configuration.");
+        }
+
         services.AddProviderServices(providerTypes);
 
         var graphQl = services

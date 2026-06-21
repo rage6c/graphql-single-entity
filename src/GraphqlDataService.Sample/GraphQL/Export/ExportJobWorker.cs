@@ -23,55 +23,64 @@ public sealed class ExportJobWorker(
 
     private async Task ProcessAvailableAsync(CancellationToken cancellationToken)
     {
-        await foreach (var exportId in store.ListAsync(cancellationToken))
+        await Parallel.ForEachAsync(
+            store.ListAsync(cancellationToken),
+            new ParallelOptions
+            {
+                MaxDegreeOfParallelism = options.Value.MaxConcurrentExports,
+                CancellationToken = cancellationToken
+            },
+            async (exportId, token) => await ProcessJobAsync(exportId, token));
+    }
+
+    private async Task ProcessJobAsync(Guid exportId, CancellationToken cancellationToken)
+    {
+        var job = await store.TryClaimAsync(exportId, _serverName, cancellationToken);
+        if (job is null)
         {
-            var job = await store.TryClaimAsync(exportId, _serverName, cancellationToken);
-            if (job is null)
-            {
-                continue;
-            }
+            return;
+        }
 
-            try
-            {
-                job.Status = ExportStatus.Running;
-                job.StartedUtc ??= DateTimeOffset.UtcNow;
-                await store.WriteAsync(job, cancellationToken);
+        try
+        {
+            job.Status = ExportStatus.Running;
+            job.StartedUtc ??= DateTimeOffset.UtcNow;
+            await store.WriteAsync(job, cancellationToken);
 
-                using var scope = scopeFactory.CreateScope();
-                var generator = scope.ServiceProvider.GetServices<IExportGenerator>()
-                    .SingleOrDefault(item => item.EntityName == job.EntityName)
-                    ?? throw new ExportGenerationException("EXPORT_FAILED", "No exporter is registered.");
-                var output = await generator.GenerateAsync(job, cancellationToken);
+            using var scope = scopeFactory.CreateScope();
+            var generator = scope.ServiceProvider.GetServices<IExportGenerator>()
+                .SingleOrDefault(item => item.EntityName == job.EntityName)
+                ?? throw new ExportGenerationException("EXPORT_FAILED", "No exporter is registered.");
+            var output = await generator.GenerateAsync(job, cancellationToken);
 
-                job.Status = ExportStatus.Completed;
-                job.CompletedUtc = DateTimeOffset.UtcNow;
-                job.LeaseUntilUtc = null;
-                job.FileName = output.FileName;
-                job.ContentType = output.ContentType;
-                job.RowCount = output.RowCount;
-                job.FileBytes = output.FileBytes;
-                await store.WriteAsync(job, cancellationToken);
-            }
-            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-            {
-                throw;
-            }
-            catch (Exception exception)
-            {
-                job.Status = ExportStatus.Failed;
-                job.CompletedUtc = DateTimeOffset.UtcNow;
-                job.LeaseUntilUtc = null;
-                job.ErrorCode = exception is ExportGenerationException exportError
-                    ? exportError.Code
-                    : "EXPORT_FAILED";
-                job.ErrorMessage = "Export generation failed.";
-                await store.WriteAsync(job, cancellationToken);
-                logger.LogError(exception, "Export {ExportId} failed on {ServerName}", exportId, _serverName);
-            }
-            finally
-            {
-                store.ReleaseClaim(exportId);
-            }
+            job.Status = ExportStatus.Completed;
+            job.CompletedUtc = DateTimeOffset.UtcNow;
+            job.LeaseUntilUtc = null;
+            job.FileName = output.FileName;
+            job.ContentType = output.ContentType;
+            job.RowCount = output.RowCount;
+            job.FileBytes = output.FileBytes;
+            await store.WriteAsync(job, cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            job.Status = ExportStatus.Failed;
+            job.CompletedUtc = DateTimeOffset.UtcNow;
+            job.LeaseUntilUtc = null;
+            job.ErrorCode = exception is ExportGenerationException exportError
+                ? exportError.Code
+                : "EXPORT_FAILED";
+            job.ErrorMessage = "Export generation failed.";
+            await store.WriteAsync(job, cancellationToken);
+            logger.LogError(exception, "Export {ExportId} failed on {ServerName}", exportId, _serverName);
+        }
+        finally
+        {
+            store.ReleaseClaim(exportId);
         }
     }
 }

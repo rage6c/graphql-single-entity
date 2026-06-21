@@ -8,6 +8,13 @@
 - `src/GraphqlDataService.Generator` — EF Core and Scriban console generator for PostgreSQL and SQL Server tables.
 - `tests/GraphqlDataService.Sample.Tests` — schema, mapper, export-store, generator, and model tests.
 
+## Documentation
+
+- [Architecture](docs/architecture.md) — components, runtime flows, provider discovery, exports, deployment, and constraints.
+- [Developer guide](docs/developer-guide.md) — setup, configuration, GraphQL usage, provider generation, extension workflow, testing, and troubleshooting.
+- [Customer API examples](docs/customer-api-examples.md) — ready-to-run customer query, mutation, export, subscription, and download examples.
+- [GraphQL coding standard](docs/graphql-data-service-coding-standard/README.md) — source-aligned implementation conventions.
+
 Each exposed table owns a folder under `Provider/{Entity}`. The Customer provider contains its entity mapping, query, mutation, subscription, inputs, mapper, filtering/sorting capabilities, and export generator. Shared behavior lives under `GraphQL`.
 
 ## Run PostgreSQL And The Service

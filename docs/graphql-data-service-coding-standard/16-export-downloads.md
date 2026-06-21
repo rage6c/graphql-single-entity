@@ -27,7 +27,7 @@ The first operation still loads the entity’s active `default` grid to validate
 
 Each job uses `{SharedStorageRoot}/{exportId:D}` containing `job.yaml` and, after success, the export file. `YamlExportJobStore` owns canonical paths, atomic YAML writes, claims, stale lease recovery, and retry limits.
 
-The worker transitions eligible jobs through claimed/running to completed or failed, records server/timestamps/file metadata, and selects an exporter by `EntityName`. The current implementation processes its scan sequentially; configured `MaxConcurrentExports` is not enforced.
+The worker transitions eligible jobs through claimed/running to completed or failed, records server/timestamps/file metadata, and selects an exporter by `EntityName`. `MaxConcurrentExports` bounds parallel job generation.
 
 ## Status Subscription
 

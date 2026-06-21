@@ -14,5 +14,4 @@ Current limitations that must not be overstated in documentation:
 
 - `MaxExecutionDepth` is configured but not enforced.
 - No cost analysis, execution timeout, persisted-operation policy, or introspection restriction is configured.
-- `MaxConcurrentExports` is configured but not enforced by `ExportJobWorker`.
 - Authentication, authorization, ownership checks, and tenant isolation are absent.
