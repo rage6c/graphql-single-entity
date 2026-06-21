@@ -1,0 +1,10 @@
+using HotChocolate.Data.Filters;
+using {{ entity_name }}Entity = {{ provider_namespace }}.Data.{{ entity_name }};
+
+namespace {{ provider_namespace }};
+
+public sealed class {{ entity_name }}FilterType : FilterInputType<{{ entity_name }}Entity>
+{
+    protected override void Configure(IFilterInputTypeDescriptor<{{ entity_name }}Entity> descriptor) =>
+        new {{ entity_name }}QueryCapabilities().ConfigureFiltering(descriptor);
+}

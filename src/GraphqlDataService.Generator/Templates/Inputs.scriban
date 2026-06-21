@@ -1,0 +1,16 @@
+namespace {{ provider_namespace }};
+
+public sealed record {{ entity_name }}CreateInput(
+{{~ for column in input_columns }}
+    {{ column.clr_type }} {{ column.property_name }}{{ if !for.last }},{{ else }});{{ end }}
+{{~ end }}{{ if input_columns.size == 0 }});{{ end }}
+
+public sealed record {{ entity_name }}UpdateInput(
+    {{ key_type }} {{ key_property }}{{ if input_columns.size > 0 }},{{ else }});{{ end }}
+{{~ for column in input_columns }}
+    Optional<{{ column.clr_type }}> {{ column.property_name }}{{ if !for.last }},{{ else }});{{ end }}
+{{~ end }}
+
+public sealed class {{ entity_name }}CreateInputType : InputObjectType<{{ entity_name }}CreateInput>;
+
+public sealed class {{ entity_name }}UpdateInputType : InputObjectType<{{ entity_name }}UpdateInput>;

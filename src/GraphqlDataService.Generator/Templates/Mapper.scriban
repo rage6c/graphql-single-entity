@@ -1,0 +1,55 @@
+using {{ namespace }}.GraphQL.Infrastructure;
+using {{ entity_name }}Entity = {{ provider_namespace }}.Data.{{ entity_name }};
+
+namespace {{ provider_namespace }};
+
+public sealed class {{ entity_name }}Mapper :
+    ICrudMapper<{{ entity_name }}Entity, {{ key_type }}, {{ entity_name }}CreateInput, {{ entity_name }}UpdateInput>
+{
+    public {{ entity_name }}Entity Create({{ entity_name }}CreateInput input, DateTimeOffset now) =>
+        new()
+        {
+{{~ if generate_guid_key }}
+            {{ key_property }} = Guid.NewGuid(),
+{{~ end }}
+{{~ for column in input_columns }}
+            {{ column.property_name }} = input.{{ column.property_name }}{{ if column.is_string }}{{ if column.is_nullable }}?.Trim(){{ else }}.Trim(){{ end }}{{ end }},
+{{~ end }}
+{{~ if has_created_at }}
+            CreatedAt = now,
+{{~ end }}
+{{~ if has_updated_at }}
+            UpdatedAt = now,
+{{~ end }}
+        };
+
+    public void ApplyUpdate({{ entity_name }}Entity entity, {{ entity_name }}UpdateInput input, DateTimeOffset now)
+    {
+{{~ for column in input_columns }}
+        if (input.{{ column.property_name }}.HasValue)
+        {
+            entity.{{ column.property_name }} = input.{{ column.property_name }}.Value{{ if column.is_string }}{{ if column.is_nullable }}?.Trim(){{ else }}.Trim(){{ end }}{{ end }};
+        }
+
+{{~ end }}
+{{~ if has_updated_at }}
+        entity.UpdatedAt = now;
+{{~ end }}
+    }
+
+    public void Validate({{ entity_name }}Entity entity)
+    {
+{{~ if required_string_columns.size > 0 }}
+        if ({{ for column in required_string_columns }}string.IsNullOrWhiteSpace(entity.{{ column.property_name }}){{ if !for.last }} ||
+            {{ end }}{{ end }})
+        {
+            throw new GraphQLException(ErrorBuilder.New()
+                .SetMessage("{{ for column in required_string_columns }}{{ column.property_name }}{{ if !for.last }}, {{ end }}{{ end }} are required.")
+                .SetCode("VALIDATION_FAILED")
+                .Build());
+        }
+{{~ end }}
+    }
+
+    public {{ key_type }} GetId({{ entity_name }}UpdateInput input) => input.{{ key_property }};
+}

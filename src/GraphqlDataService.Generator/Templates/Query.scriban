@@ -1,0 +1,34 @@
+using {{ namespace }}.Data;
+using {{ namespace }}.GraphQL.Export;
+using {{ namespace }}.GraphQL.Infrastructure;
+using {{ entity_name }}Entity = {{ provider_namespace }}.Data.{{ entity_name }};
+
+namespace {{ provider_namespace }};
+
+[ExtendObjectType(OperationTypeNames.Query)]
+public sealed class {{ entity_name }}Query : CrudQuery<{{ entity_name }}Entity>
+{
+    [GraphQLName("{{ entity_plural_variable }}")]
+    [UsePaging(IncludeTotalCount = true)]
+    [UseProjection]
+    [UseFiltering(typeof({{ entity_name }}FilterType))]
+    [UseSorting(typeof({{ entity_name }}SortType))]
+    public IQueryable<{{ entity_name }}Entity> Get{{ entity_plural }}(AppDbContext db) => GetEntities(db);
+
+    [GraphQLName("download{{ entity_plural }}")]
+    public Task<ExportJob> Download{{ entity_plural }}Async(
+        ExportFileFormat format,
+        IReadOnlyList<string> columns,
+        IReadOnlyList<ExportFilterInput>? filters,
+        IReadOnlyList<ExportOrderInput>? order,
+        [Service] IEntityExportJobService<{{ entity_name }}Entity> jobs,
+        CancellationToken cancellationToken) =>
+        EnqueueExportAsync(format, columns, filters, order, jobs, cancellationToken);
+
+    [GraphQLName("download{{ entity_plural }}ByGridView")]
+    public Task<ExportJob> Download{{ entity_plural }}ByGridViewAsync(
+        string gridViewName,
+        [Service] IEntityExportJobService<{{ entity_name }}Entity> jobs,
+        CancellationToken cancellationToken) =>
+        EnqueueGridViewExportAsync(gridViewName, jobs, cancellationToken);
+}

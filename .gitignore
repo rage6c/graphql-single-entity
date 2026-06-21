@@ -1,0 +1,8 @@
+bin/
+obj/
+logs/
+exports/
+TestResults/
+*.user
+*.DS_Store
+.idea/

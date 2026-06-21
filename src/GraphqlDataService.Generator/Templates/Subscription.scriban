@@ -1,0 +1,23 @@
+using {{ namespace }}.Configuration;
+using {{ namespace }}.GraphQL.Export;
+using {{ namespace }}.GraphQL.Infrastructure;
+using Microsoft.Extensions.Options;
+using {{ entity_name }}Entity = {{ provider_namespace }}.Data.{{ entity_name }};
+
+namespace {{ provider_namespace }};
+
+[ExtendObjectType(OperationTypeNames.Subscription)]
+public sealed class {{ entity_name }}Subscription : CrudSubscription<{{ entity_name }}Entity>
+{
+    public IAsyncEnumerable<ExportJobStatusUpdate> SubscribeToDownload{{ entity_plural }}Status(
+        Guid exportId,
+        [Service] IExportJobStore store,
+        [Service] IOptions<ExportConfig> options,
+        CancellationToken cancellationToken) =>
+        SubscribeToExportStatusAsync(exportId, store, options, cancellationToken);
+
+    [Subscribe(With = nameof(SubscribeToDownload{{ entity_plural }}Status))]
+    [GraphQLName("download{{ entity_plural }}Status")]
+    public ExportJobStatusUpdate Download{{ entity_plural }}Status(
+        [EventMessage] ExportJobStatusUpdate update) => update;
+}

@@ -1,0 +1,16 @@
+using {{ namespace }}.Data.Entities;
+
+namespace {{ provider_namespace }}.Data;
+
+public sealed class {{ entity_name }} : EntityBase
+{
+{{~ for column in columns }}
+{{~ if column.is_audit }}
+    [GraphQLIgnore]
+{{~ end }}
+    public {{ if column.is_string && !column.is_nullable }}required {{ end }}{{ column.clr_type }} {{ column.property_name }} { get; set; }{{ if column.is_string && column.is_nullable }} = null;{{ end }}
+{{~ if !for.last }}
+
+{{~ end }}
+{{~ end }}
+}

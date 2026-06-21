@@ -1,0 +1,25 @@
+using System.Globalization;
+using {{ namespace }}.GraphQL.Export;
+using {{ entity_name }}Entity = {{ provider_namespace }}.Data.{{ entity_name }};
+
+namespace {{ provider_namespace }};
+
+public sealed class {{ entity_name }}QueryCapabilities : EntityExportQueryCapabilities<{{ entity_name }}Entity>
+{
+    private static readonly IReadOnlyList<IEntityExportField<{{ entity_name }}Entity>> EntityFields =
+    [
+{{~ for column in export_columns }}
+        {{ column.field_definition }}{{ if !for.last }},{{ end }}
+{{~ end }}
+    ];
+
+    protected override IReadOnlyList<IEntityExportField<{{ entity_name }}Entity>> Fields => EntityFields;
+
+    protected override string StableOrderField => "{{ key_graph_ql_name }}";
+
+    private static IReadOnlySet<ExportFilterOperator> Set(params ExportFilterOperator[] operators) =>
+        operators.ToHashSet();
+
+    private static ExportGenerationException InvalidFilter(string field) =>
+        new("EXPORT_FILTER_INVALID", $"Unsupported filter for field '{field}'.");
+}

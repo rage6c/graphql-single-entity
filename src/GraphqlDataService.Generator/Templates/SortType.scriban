@@ -1,0 +1,10 @@
+using HotChocolate.Data.Sorting;
+using {{ entity_name }}Entity = {{ provider_namespace }}.Data.{{ entity_name }};
+
+namespace {{ provider_namespace }};
+
+public sealed class {{ entity_name }}SortType : SortInputType<{{ entity_name }}Entity>
+{
+    protected override void Configure(ISortInputTypeDescriptor<{{ entity_name }}Entity> descriptor) =>
+        new {{ entity_name }}QueryCapabilities().ConfigureSorting(descriptor);
+}

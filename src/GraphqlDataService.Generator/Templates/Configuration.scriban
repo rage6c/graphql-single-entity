@@ -1,0 +1,20 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace {{ provider_namespace }}.Data;
+
+public sealed class {{ entity_name }}Configuration : IEntityTypeConfiguration<{{ entity_name }}>
+{
+    public void Configure(EntityTypeBuilder<{{ entity_name }}> entity)
+    {
+        entity.ToTable("{{ table_name }}", "{{ schema_name }}");
+        entity.HasKey(item => item.{{ key_property }});
+{{~ for column in columns }}
+        entity.Property(item => item.{{ column.property_name }})
+            .HasColumnName("{{ column.column_name }}"){{ if column.max_length }}
+            .HasMaxLength({{ column.max_length }}){{ end }}{{ if !column.is_nullable }}
+            .IsRequired(){{ end }}{{ if column.is_identity }}
+            .ValueGeneratedOnAdd(){{ end }};
+{{~ end }}
+    }
+}

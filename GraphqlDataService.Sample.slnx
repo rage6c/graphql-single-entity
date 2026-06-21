@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="src/GraphqlDataService.Sample/GraphqlDataService.Sample.csproj" />
+  <Project Path="src/GraphqlDataService.Generator/GraphqlDataService.Generator.csproj" />
+  <Project Path="tests/GraphqlDataService.Sample.Tests/GraphqlDataService.Sample.Tests.csproj" />
+</Solution>

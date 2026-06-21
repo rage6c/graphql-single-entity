@@ -1,0 +1,31 @@
+using {{ namespace }}.Data;
+using {{ namespace }}.GraphQL.Infrastructure;
+using {{ entity_name }}Entity = {{ provider_namespace }}.Data.{{ entity_name }};
+
+namespace {{ provider_namespace }};
+
+[ExtendObjectType(OperationTypeNames.Mutation)]
+public sealed class {{ entity_name }}Mutation({{ entity_name }}Mapper mapper) :
+    CrudMutation<{{ entity_name }}Entity, {{ key_type }}, {{ entity_name }}CreateInput, {{ entity_name }}UpdateInput, {{ entity_name }}Mapper>(mapper)
+{
+    [GraphQLName("create{{ entity_name }}")]
+    public Task<{{ entity_name }}Entity> Create{{ entity_name }}Async(
+        {{ entity_name }}CreateInput input,
+        AppDbContext db,
+        CancellationToken cancellationToken) =>
+        CreateAsync(input, db, cancellationToken);
+
+    [GraphQLName("update{{ entity_name }}")]
+    public Task<{{ entity_name }}Entity> Update{{ entity_name }}Async(
+        {{ entity_name }}UpdateInput input,
+        AppDbContext db,
+        CancellationToken cancellationToken) =>
+        UpdateAsync(input, db, cancellationToken);
+
+    [GraphQLName("delete{{ entity_name }}")]
+    public Task<{{ entity_name }}Entity> Delete{{ entity_name }}Async(
+        {{ key_type }} id,
+        AppDbContext db,
+        CancellationToken cancellationToken) =>
+        DeleteAsync(id, db, cancellationToken);
+}

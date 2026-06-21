@@ -1,0 +1,21 @@
+using {{ namespace }}.Configuration;
+using {{ namespace }}.Data;
+using {{ namespace }}.GraphQL.Export;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using {{ entity_name }}Entity = {{ provider_namespace }}.Data.{{ entity_name }};
+
+namespace {{ provider_namespace }};
+
+public sealed class {{ entity_name }}ExportGenerator(
+    IDbContextFactory<AppDbContext> dbContextFactory,
+    IExportJobStore store,
+    IEntityExportQueryCapabilities<{{ entity_name }}Entity> queryCapabilities,
+    IOptions<ExportConfig> options) :
+    CrudExportGenerator<{{ entity_name }}Entity>(dbContextFactory, store, queryCapabilities, options)
+{
+    public static string SupportedEntityName => typeof({{ entity_name }}Entity).Name;
+
+    protected override string FileNamePrefix => "{{ entity_plural_variable }}";
+    protected override string WorksheetName => "{{ entity_plural }}";
+}
