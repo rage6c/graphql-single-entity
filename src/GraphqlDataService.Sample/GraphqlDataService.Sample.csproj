@@ -14,4 +14,7 @@
     <PackageReference Include="Serilog.Sinks.File" />
     <PackageReference Include="YamlDotNet" />
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="GraphqlDataService.Sample.Tests" />
+  </ItemGroup>
 </Project>

@@ -11,6 +11,9 @@
     <PackageReference Include="Scriban" />
   </ItemGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="GraphqlDataService.Sample.Tests" />
+  </ItemGroup>
+  <ItemGroup>
     <None Update="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
     <None Update="Templates/**/*.scriban" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

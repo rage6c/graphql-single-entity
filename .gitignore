@@ -1,7 +1,9 @@
 bin/
 obj/
-logs/
-exports/
+/logs/
+/exports/
+/src/GraphqlDataService.Sample/logs/
+/src/GraphqlDataService.Sample/exports/
 TestResults/
 *.user
 *.DS_Store

@@ -47,3 +47,6 @@ foreach (var table in tables)
     await generator.GenerateAsync(model, outputPath, CancellationToken.None);
     Console.WriteLine($"Generated {table.Schema}.{table.Name} -> {Path.Combine(outputPath, model.EntityName)}");
 }
+
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+internal partial class Program;

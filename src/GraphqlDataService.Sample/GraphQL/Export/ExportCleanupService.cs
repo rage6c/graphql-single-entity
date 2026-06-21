@@ -13,21 +13,26 @@ public sealed class ExportCleanupService(
         using var timer = new PeriodicTimer(TimeSpan.FromMinutes(options.Value.CleanupIntervalMinutes));
         while (await timer.WaitForNextTickAsync(stoppingToken))
         {
-            await foreach (var exportId in store.ListAsync(stoppingToken))
+            await CleanupOnceAsync(stoppingToken);
+        }
+    }
+
+    internal async Task CleanupOnceAsync(CancellationToken cancellationToken)
+    {
+        await foreach (var exportId in store.ListAsync(cancellationToken))
+        {
+            try
             {
-                try
+                var job = await store.ReadAsync(exportId, cancellationToken);
+                if (job is not null && job.ExpiresUtc <= DateTimeOffset.UtcNow &&
+                    job.Status is not (ExportStatus.Claimed or ExportStatus.Running or ExportStatus.Downloading))
                 {
-                    var job = await store.ReadAsync(exportId, stoppingToken);
-                    if (job is not null && job.ExpiresUtc <= DateTimeOffset.UtcNow &&
-                        job.Status is not (ExportStatus.Claimed or ExportStatus.Running or ExportStatus.Downloading))
-                    {
-                        await store.DeleteAsync(exportId, stoppingToken);
-                    }
+                    await store.DeleteAsync(exportId, cancellationToken);
                 }
-                catch (Exception exception)
-                {
-                    logger.LogWarning(exception, "Failed to clean export {ExportId}", exportId);
-                }
+            }
+            catch (Exception exception)
+            {
+                logger.LogWarning(exception, "Failed to clean export {ExportId}", exportId);
             }
         }
     }

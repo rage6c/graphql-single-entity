@@ -72,4 +72,5 @@ app.MapHealthChecks("/health/ready", new HealthCheckOptions
 
 await app.RunAsync();
 
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 public partial class Program;

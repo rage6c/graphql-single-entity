@@ -83,6 +83,14 @@ dotnet test GraphqlDataService.Sample.slnx --no-build --no-restore
 dotnet list package --vulnerable --include-transitive
 ```
 
+Run the production-code coverage gate:
+
+```bash
+./scripts/coverage.sh
+```
+
+The script excludes the test assembly, reports the service and generator assemblies, and fails when combined line coverage is below 90%.
+
 ## Load Sample Data
 
 With the service running:

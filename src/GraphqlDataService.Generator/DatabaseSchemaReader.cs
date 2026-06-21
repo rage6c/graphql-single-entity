@@ -14,13 +14,23 @@ public sealed class DatabaseSchemaReader(DatabaseProvider provider)
         var connection = db.Database.GetDbConnection();
         await connection.OpenAsync(cancellationToken);
         await using var command = connection.CreateCommand();
-        command.CommandText = provider == DatabaseProvider.PostgreSql
-            ? PostgreSqlQuery
-            : SqlServerQuery;
+        command.CommandText = Query;
         AddParameter(command, "@schema", schema);
 
-        var columns = new List<DatabaseColumn>();
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+        return await MaterializeAsync(reader, selectedTables, cancellationToken);
+    }
+
+    internal string Query => provider == DatabaseProvider.PostgreSql
+        ? PostgreSqlQuery
+        : SqlServerQuery;
+
+    internal static async Task<IReadOnlyList<DatabaseTable>> MaterializeAsync(
+        DbDataReader reader,
+        IReadOnlyList<string> selectedTables,
+        CancellationToken cancellationToken)
+    {
+        var columns = new List<DatabaseColumn>();
         while (await reader.ReadAsync(cancellationToken))
         {
             columns.Add(new DatabaseColumn(

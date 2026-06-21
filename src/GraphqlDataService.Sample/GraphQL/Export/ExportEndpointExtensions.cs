@@ -12,7 +12,7 @@ public static class ExportEndpointExtensions
         return endpoints;
     }
 
-    private static async Task<IResult> DownloadAsync(
+    internal static async Task<IResult> DownloadAsync(
         Guid exportId,
         HttpContext httpContext,
         IExportJobStore store,

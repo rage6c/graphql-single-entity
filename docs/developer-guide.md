@@ -243,6 +243,14 @@ dotnet test GraphqlDataService.Sample.slnx --no-build --no-restore
 dotnet list package --vulnerable --include-transitive
 ```
 
+Run the repeatable 90% production-code coverage gate with:
+
+```bash
+./scripts/coverage.sh
+```
+
+Composition-root top-level programs are excluded with `ExcludeFromCodeCoverage`; service, generator, and infrastructure code remain included.
+
 Warnings are treated as errors. Update package lock files whenever dependencies change.
 
 ## Troubleshooting

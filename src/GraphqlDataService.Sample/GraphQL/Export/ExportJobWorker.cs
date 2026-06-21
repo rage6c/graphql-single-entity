@@ -21,7 +21,7 @@ public sealed class ExportJobWorker(
         while (await timer.WaitForNextTickAsync(stoppingToken));
     }
 
-    private async Task ProcessAvailableAsync(CancellationToken cancellationToken)
+    internal async Task ProcessAvailableAsync(CancellationToken cancellationToken)
     {
         await Parallel.ForEachAsync(
             store.ListAsync(cancellationToken),

@@ -18,7 +18,10 @@ Run:
 
 ```bash
 dotnet test GraphqlDataService.Sample.slnx --no-restore
+./scripts/coverage.sh
 ```
+
+Production line coverage must remain at or above 90%. The coverage script excludes the test assembly and composition-root top-level programs, includes both production assemblies, writes Cobertura and text reports under `TestResults`, and fails below the threshold.
 
 Production-oriented additions still needed:
 
