@@ -12,7 +12,7 @@ gridDefinition(entityName: String!, gridViewName: String = "default"): GridDefin
 
 `EntityGridDefinitionRegistry` reads active rows from `AppDbContext.GridSchemas` with `AsNoTracking`. Entity and view matching are case-insensitive. The `definition` JSON is deserialized using web JSON conventions.
 
-The EF entity maps to PostgreSQL table `app.gridSchema`; `definition` is `jsonb`, and `(EntityName, ViewName)` has a unique index. Missing/inactive rows return `GRID_DEFINITION_NOT_FOUND`; malformed JSON returns `GRID_DEFINITION_INVALID`.
+The EF entity maps to SQL Server table `[app].[gridSchema]`; `Definition` is `nvarchar(max)` containing JSON, and `(EntityName, ViewName)` has a unique index. Missing/inactive rows return `GRID_DEFINITION_NOT_FOUND`; malformed JSON returns `GRID_DEFINITION_INVALID`.
 
 `DatabaseInitializer` accepts `IEnumerable<IEntityGridDefinition>` and inserts missing seeds after `EnsureCreated`. The current Customer provider does not implement or register a seed. Therefore a fresh deployment must provision an active `Customer/default` database row before grid lookup or exports are used.
 

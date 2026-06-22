@@ -4,7 +4,7 @@
 
 This repository demonstrates a table-oriented GraphQL data service. Each exposed database table owns an entity provider, while shared GraphQL, EF Core, grid, and export infrastructure remains entity-agnostic. A companion console application generates provider source from PostgreSQL or SQL Server metadata.
 
-The current sample exposes one entity, `Customer`, and uses PostgreSQL at runtime.
+The current sample exposes one entity, `Customer`, and uses SQL Server at runtime.
 
 ## System Context
 
@@ -13,9 +13,9 @@ flowchart LR
     client["GraphQL client"] -->|"HTTP /graphql"| service["GraphqlDataService.Sample"]
     client -->|"WebSocket /graphql"| service
     downloader["File download client"] -->|"GET /exports/{id}/download"| service
-    service -->|"EF Core / Npgsql"| postgres[("PostgreSQL")]
+    service -->|"EF Core / SQL Server provider"| database[("SQL Server")]
     service -->|"YAML jobs and export files"| storage[("Shared export storage")]
-    generator["GraphqlDataService.Generator"] -->|"Schema metadata"| postgres
+    generator["GraphqlDataService.Generator"] -->|"Schema metadata"| database
     generator -->|"Generated C# providers"| source["Provider source folders"]
 ```
 
@@ -26,7 +26,7 @@ flowchart LR
 | `GraphqlDataService.Sample` | GraphQL schema, CRUD, grid metadata, background exports, REST downloads, health endpoints |
 | `GraphqlDataService.Generator` | Reads PostgreSQL/SQL Server table metadata and renders provider source with Scriban |
 | `GraphqlDataService.Sample.Tests` | Schema, mapper, EF model, export store, capability, and generator tests |
-| PostgreSQL | Customer data and persisted `gridSchema` definitions |
+| SQL Server | Customer data and persisted `gridSchema` definitions |
 | Shared export storage | Cross-server UUID job folders containing `job.yaml` and generated files |
 
 ## Service Structure
@@ -128,7 +128,7 @@ sequenceDiagram
 
 ## Grid Definitions
 
-`gridDefinition(entityName, gridViewName)` reads an active definition from `app.gridSchema`. The JSON document contains display metadata and export field permissions. The registry currently reads PostgreSQL for every request; it does not cache definitions.
+`gridDefinition(entityName, gridViewName)` reads an active definition from `[app].[gridSchema]`. The JSON document contains display metadata and export field permissions. The registry currently reads SQL Server for every request; it does not cache definitions.
 
 Both export query variants require a grid definition:
 
@@ -147,7 +147,7 @@ sequenceDiagram
     participant Store as YAML Job Store
     participant Worker as ExportJobWorker
     participant Generator as CustomerExportGenerator
-    participant DB as PostgreSQL
+    participant DB as SQL Server
     participant REST as Download Endpoint
 
     Client->>Query: downloadCustomers(...)
@@ -187,7 +187,7 @@ PostgreSQL and SQL Server readers load columns, nullability, primary keys, ident
 
 The application can run on multiple servers when every server shares:
 
-- the same PostgreSQL database;
+- the same SQL Server database;
 - the same durable export storage root;
 - filesystem semantics supporting exclusive file creation and atomic replacement.
 

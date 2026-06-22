@@ -1,6 +1,6 @@
 # GraphQL Data Service Sample
 
-.NET 10 sample data service built with Hot Chocolate 15, EF Core, PostgreSQL, asynchronous CSV/Excel exports, and a schema-driven provider generator.
+.NET 10 sample data service built with Hot Chocolate 15, EF Core, SQL Server, asynchronous CSV/Excel exports, and a schema-driven provider generator.
 
 ## Projects
 
@@ -17,14 +17,13 @@
 
 Each exposed table owns a folder under `Provider/{Entity}`. The Customer provider contains its entity mapping, query, mutation, subscription, inputs, mapper, filtering/sorting capabilities, and export generator. Shared behavior lives under `GraphQL`.
 
-## Run PostgreSQL And The Service
+## Run SQL Server And The Service
 
-The Docker Compose password is `postgres`; override the sample appsetting when running locally:
+Start SQL Server and then run the service:
 
 ```bash
 docker compose up -d
-ConnectionStrings__Database='Host=localhost;Port=5432;Database=graphql_sample;Username=postgres;Password=postgres' \
-  dotnet run --project src/GraphqlDataService.Sample
+dotnet run --project src/GraphqlDataService.Sample
 ```
 
 Open `/graphql`. Authentication and authorization are intentionally disabled in this sample.
@@ -64,8 +63,8 @@ The generator supports `PostgreSql`/`Postgres` and `SqlServer`/`Mssql`:
 
 ```bash
 dotnet run --project src/GraphqlDataService.Generator -- \
-  --Generator:Provider=PostgreSql \
-  --Generator:ConnectionString='Host=localhost;Port=5432;Database=graphql_sample;Username=postgres;Password=postgres' \
+  --Generator:Provider=SqlServer \
+  --Generator:ConnectionString='Server=localhost,1433;Database=graphql_sample;User Id=sa;Password=YourStrong!Passw0rd;Encrypt=True;TrustServerCertificate=True' \
   --Generator:Namespace=GraphqlDataService.Sample \
   --Generator:OutputPath=src/GraphqlDataService.Sample/Provider \
   --Generator:Schema=app \

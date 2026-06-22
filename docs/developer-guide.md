@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - .NET 10 SDK.
-- PostgreSQL 17 or a compatible PostgreSQL server for the sample service.
+- SQL Server 2022 or a compatible SQL Server instance for the sample service.
 - Docker Compose if using the repository database container.
 - Optional SQL Server when testing generator support for MSSQL.
 
@@ -16,17 +16,16 @@ dotnet restore GraphqlDataService.Sample.slnx
 
 ## Start A Local Environment
 
-Start PostgreSQL:
+Start SQL Server:
 
 ```bash
-docker compose up -d postgres
+docker compose up -d sqlserver
 ```
 
-The Compose password is `postgres`, while the committed sample connection string uses `postgres123`. Override it when starting the service:
+The committed connection string matches the Compose `sa` account:
 
 ```bash
-ConnectionStrings__Database='Host=localhost;Port=5432;Database=graphql_sample;Username=postgres;Password=postgres' \
-  dotnet run --project src/GraphqlDataService.Sample
+dotnet run --project src/GraphqlDataService.Sample
 ```
 
 The application calls `EnsureCreated` outside the `Testing` environment. This creates missing tables but does not migrate or remove columns in an existing database.
@@ -64,15 +63,21 @@ Important keys are `SharedStorageRoot`, `DefaultFormat`, `DeleteJobFolderAfterDo
 
 Customer list queries do not require grid metadata, but both export queries and `gridDefinition` do. The current source has no Customer grid seed.
 
-After the service creates `app."gridSchema"`, provision an active default definition. The exact SQL may need adjustment if your naming convention differs:
+After the service creates `[app].[gridSchema]`, provision an active default definition. The exact SQL may need adjustment if your naming convention differs:
 
 ```sql
-INSERT INTO app."gridSchema"
-    ("Id", "EntityName", "ViewName", "Definition", "Version", "IsActive",
-     "CreatedAt", "UpdatedAt", "CreatedBy")
-VALUES
-    (gen_random_uuid(), 'Customer', 'default',
-     '{
+IF NOT EXISTS (
+    SELECT 1
+    FROM [app].[gridSchema]
+    WHERE [EntityName] = 'Customer' AND [ViewName] = 'default'
+)
+BEGIN
+    INSERT INTO [app].[gridSchema]
+        ([Id], [EntityName], [ViewName], [Definition], [Version], [IsActive],
+         [CreatedAt], [UpdatedAt], [CreatedBy])
+    VALUES
+        (NEWID(), 'Customer', 'default',
+         N'{
        "entityName":"Customer",
        "gridViewName":"default",
        "exportFormat":null,
@@ -82,9 +87,9 @@ VALUES
          {"columnName":"Email","columnType":0,"displayFormat":null,"textAlignment":0,"visibility":true,"width":280,"enableFiltering":true,"enableSorting":true,"sourceGraphqlColumn":"email"},
          {"columnName":"Birth Date","columnType":4,"displayFormat":"yyyy-MM-dd","textAlignment":1,"visibility":true,"width":140,"enableFiltering":true,"enableSorting":true,"sourceGraphqlColumn":"birthDate"}
        ]
-     }'::jsonb,
-     1, true, now(), now(), 'developer')
-ON CONFLICT ("EntityName", "ViewName") DO NOTHING;
+         }',
+         1, 1, SYSUTCDATETIME(), SYSUTCDATETIME(), 'developer');
+END;
 ```
 
 The enum values above follow `GridColumnType` and `TextAlignment` as currently serialized by `System.Text.Json`.
@@ -151,7 +156,7 @@ The generator reads live metadata and writes provider files:
 
 ```bash
 dotnet run --project src/GraphqlDataService.Generator -- \
-  --Generator:Provider=PostgreSql \
+  --Generator:Provider=SqlServer \
   --Generator:ConnectionString="$DATABASE_CONNECTION_STRING" \
   --Generator:Namespace=GraphqlDataService.Sample \
   --Generator:OutputPath=src/GraphqlDataService.Sample/Provider \
@@ -159,7 +164,7 @@ dotnet run --project src/GraphqlDataService.Generator -- \
   --Generator:Tables:0=orders
 ```
 
-For SQL Server use `SqlServer` or `Mssql` and the corresponding connection string/schema.
+For PostgreSQL use `PostgreSql` or `Postgres` and the corresponding connection string/schema.
 
 Before generation:
 

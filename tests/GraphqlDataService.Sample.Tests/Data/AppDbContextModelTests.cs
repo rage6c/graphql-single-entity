@@ -12,7 +12,7 @@ public sealed class AppDbContextModelTests
     public void Model_LoadsCustomerConfigurationFromProviderAssembly()
     {
         var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseNpgsql("Host=localhost;Database=model;Username=test;Password=test")
+            .UseSqlServer("Server=localhost;Database=model;User Id=test;Password=test;TrustServerCertificate=true")
             .Options;
         using var db = new AppDbContext(options, Options.Create(new DatabaseConfig
         {

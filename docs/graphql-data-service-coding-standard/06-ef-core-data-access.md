@@ -1,6 +1,6 @@
 # EF Core Data Access
 
-The service uses PostgreSQL through `Npgsql.EntityFrameworkCore.PostgreSQL`. `AppDbContext` receives `IOptions<DatabaseConfig>` and applies every `IEntityTypeConfiguration` beneath the configured provider namespace.
+The service uses SQL Server through `Microsoft.EntityFrameworkCore.SqlServer`. `AppDbContext` receives `IOptions<DatabaseConfig>` and applies every `IEntityTypeConfiguration` beneath the configured provider namespace.
 
 Rules:
 
@@ -13,6 +13,6 @@ Rules:
 - Use hard delete consistently. No query or export path applies a deleted-row predicate.
 - One normal mutation uses one `SaveChangesAsync`; introduce explicit transactions only for multi-save operations.
 
-`GridSchema` is mapped directly in `AppDbContext` to `app.gridSchema`, with `jsonb` definition storage and a unique `(EntityName, ViewName)` index.
+`GridSchema` is mapped directly in `AppDbContext` to `[app].[gridSchema]`, with `nvarchar(max)` JSON definition storage and a unique `(EntityName, ViewName)` index.
 
 The sample uses `EnsureCreated` for convenience, not migrations. Production services must use reviewed EF migrations and should not rely on `EnsureCreated` to evolve an existing database. This matters when source removes a column: the old database column remains until a migration drops it.

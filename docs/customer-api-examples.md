@@ -515,7 +515,7 @@ Variables:
 
 ### Duplicate Email Error
 
-The database has a unique email index, but the current generic mutation does not translate PostgreSQL unique-constraint exceptions. The public response is therefore sanitized:
+The database has a unique email index, but the current generic mutation does not translate SQL Server unique-constraint exceptions. The public response is therefore sanitized:
 
 ```json
 {

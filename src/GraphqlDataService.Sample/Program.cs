@@ -34,7 +34,7 @@ builder.Services.AddOptions<DatabaseConfig>()
 
 var connectionString = builder.Configuration.GetConnectionString("Database")
     ?? throw new InvalidOperationException("ConnectionStrings:Database is required.");
-builder.Services.AddDbContextFactory<AppDbContext>(options => options.UseNpgsql(connectionString));
+builder.Services.AddDbContextFactory<AppDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddScoped(provider =>
     provider.GetRequiredService<IDbContextFactory<AppDbContext>>().CreateDbContext());
 

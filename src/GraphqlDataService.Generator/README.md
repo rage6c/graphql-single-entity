@@ -9,8 +9,8 @@ Configure `Generator` in `appsettings.json`, environment variables, or command-l
 ```json
 {
   "Generator": {
-    "Provider": "PostgreSql",
-    "ConnectionString": "Host=localhost;Database=app;Username=postgres;Password=postgres",
+    "Provider": "SqlServer",
+    "ConnectionString": "Server=localhost,1433;Database=app;User Id=sa;Password=secret;Encrypt=True;TrustServerCertificate=True",
     "Namespace": "GraphqlDataService.Sample",
     "OutputPath": "../GraphqlDataService.Sample/Provider",
     "Schema": "app",
@@ -24,8 +24,8 @@ Configure `Generator` in `appsettings.json`, environment variables, or command-l
 Keep connection strings outside committed configuration. Environment variables use standard .NET configuration names:
 
 ```bash
-export Generator__Provider=PostgreSql
-export Generator__ConnectionString='Host=localhost;Database=app;Username=postgres;Password=secret'
+export Generator__Provider=SqlServer
+export Generator__ConnectionString='Server=localhost,1433;Database=app;User Id=sa;Password=secret;Encrypt=True;TrustServerCertificate=True'
 export Generator__Namespace=GraphqlDataService.Sample
 export Generator__OutputPath=../GraphqlDataService.Sample/Provider
 export Generator__Schema=app

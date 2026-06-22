@@ -11,7 +11,7 @@ Source-aligned guidance for the .NET 10 Hot Chocolate data service in this repos
 - Keep `EntityBase` empty; keys and audit properties belong to concrete entities.
 - Support single `Guid`, `int`, `long`, or other EF-compatible keys through `TKey`; use hard delete.
 - Discover provider type extensions, mappers, export capabilities, and exporters beneath configured provider namespaces.
-- Store grid definitions in PostgreSQL `app.gridSchema`; the database is the runtime source of truth.
+- Store grid definitions in SQL Server `[app].[gridSchema]`; the database is the runtime source of truth.
 - Run exports as shared-folder jobs and serve completed files through `GET /exports/{exportId}/download`.
 - Authentication is disabled in the sample. Production deployments must add it together with entity and export ownership policies.
 - Generate provider scaffolding from PostgreSQL or SQL Server with the EF Core/Scriban console generator.

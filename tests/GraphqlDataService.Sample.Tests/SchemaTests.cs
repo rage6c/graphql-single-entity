@@ -15,7 +15,8 @@ public sealed class SchemaTests
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddDbContextFactory<AppDbContext>(options =>
-            options.UseNpgsql("Host=localhost;Database=schema;Username=test;Password=test"));
+            options.UseSqlServer(
+                "Server=localhost;Database=schema;User Id=test;Password=test;TrustServerCertificate=true"));
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {

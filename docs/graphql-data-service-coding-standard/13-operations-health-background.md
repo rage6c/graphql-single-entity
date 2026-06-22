@@ -5,7 +5,7 @@ The service exposes:
 - `/health/live` with no dependency checks;
 - `/health/ready` with `ExportStorageHealthCheck` tagged `ready`.
 
-Readiness currently validates shared export storage only. It does not check PostgreSQL connectivity, GraphQL schema construction, or grid definitions.
+Readiness currently validates shared export storage only. It does not check SQL Server connectivity, GraphQL schema construction, or grid definitions.
 
 `ExportJobWorker` uses `PeriodicTimer`, scans YAML jobs, atomically claims eligible work through `IExportJobStore`, records `Environment.MachineName`, creates a scope for the matching `IExportGenerator`, and writes completed or sanitized failed state.
 

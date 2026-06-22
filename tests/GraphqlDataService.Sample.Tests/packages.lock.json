@@ -1132,7 +1132,7 @@
           "HotChocolate.Data.EntityFramework": "[15.1.17, )",
           "HotChocolate.Subscriptions.InMemory": "[15.1.17, )",
           "Microsoft.EntityFrameworkCore": "[9.0.4, )",
-          "Npgsql.EntityFrameworkCore.PostgreSQL": "[9.0.4, )",
+          "Microsoft.EntityFrameworkCore.SqlServer": "[9.0.4, )",
           "Serilog.AspNetCore": "[8.0.3, )",
           "Serilog.Sinks.File": "[6.0.0, )",
           "YamlDotNet": "[16.3.0, )"

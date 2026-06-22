@@ -5,7 +5,7 @@
 The repository centrally pins packages in `Directory.Packages.props` and locks restore results per project.
 
 - Hot Chocolate packages: 15.1.17.
-- EF Core and Npgsql provider: 9.0.4.
+- EF Core and SQL Server provider: 9.0.4. Npgsql remains in the generator for PostgreSQL metadata support.
 - ClosedXML: Excel generation.
 - YamlDotNet: export job records.
 - Scriban 7.2.4 and EF SQL Server: source generator only.

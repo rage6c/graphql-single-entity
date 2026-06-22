@@ -30,7 +30,7 @@ public sealed class AppDbContext(
         {
             entity.ToTable("gridSchema", DatabaseSchemas.Application);
             entity.HasKey(x => x.Id);
-            entity.Property(x => x.Definition).HasColumnType("jsonb");
+            entity.Property(x => x.Definition).HasColumnType("nvarchar(max)");
             entity.HasIndex(x => new { x.EntityName, x.ViewName }).IsUnique();
         });
     }
